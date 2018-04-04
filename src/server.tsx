@@ -36,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
     publicPath: webpackConfig.output.publicPath,
     stats: { colors: true },
     noInfo: true,
-    hot: true,
+    hot: false,
     inline: true,
     lazy: false,
     historyApiFallback: true,
