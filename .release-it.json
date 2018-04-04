@@ -1,0 +1,12 @@
+{
+  "increment": "conventional:angular",
+  "beforeChangelogCommand": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+  "changelogCommand": "conventional-changelog | tail -n +3",
+  "safeBump": false,
+  "github": {
+    "release": true
+  },
+  "src": {
+    "tagName": "v%s"
+  }
+}
