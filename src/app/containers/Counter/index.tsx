@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { increment, decrement } from 'modules/counter/';
 import { ICounter } from 'models/counter';
 import { ICounterAction } from 'models/counter';
+import { decrement, increment } from 'modules/counter/';
+import * as React from 'react';
 const { connect } = require('react-redux');
 const style = require('./style.css');
 
@@ -18,8 +18,7 @@ interface IProps {
     increment: () => dispatch(increment()),
   }),
 )
-
-class Counter extends React.Component<IProps, {}> {
+export class Counter extends React.Component<IProps, {}> {
   public render() {
     const { increment, decrement, counter } = this.props;
 
@@ -42,5 +41,3 @@ class Counter extends React.Component<IProps, {}> {
     );
   }
 }
-
-export { Counter }

@@ -4,6 +4,10 @@
     "tslint-react"
   ],
   "rules": {
+    "array-type": [
+      true,
+      "array"
+    ],
     "indent": [
       true,
       "spaces"
