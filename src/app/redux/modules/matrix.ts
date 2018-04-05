@@ -1,23 +1,18 @@
 import { IMatrix, IMatrixAction, IMatrixItem } from 'models/matrix';
 
 /** Action Types */
-export const SET_SIZE: string = 'matrix/SET_SIZE';
-export const INVERT_ITEM: string = 'matrix/INVERT_ITEM';
-export const GET_DOMAINS_COUNT: string = 'matrix/GET_DOMAINS_COUNT';
+export const SET_SIZE = 'matrix/SET_SIZE';
+export const INVERT_ITEM = 'matrix/INVERT_ITEM';
+export const COUNT_DOMAINS = 'matrix/COUNT_DOMAINS';
 
 /** Matrix: Initial State */
-const initialState: IMatrix = {
-  value: createEmptyMatrix(7, 7),
-  domainsLength: 0,
-};
+const initialState: IMatrix = { value: createEmptyMatrix(7, 7) };
 
 /** Reducer: MatrixReducer */
 export function matrixReducer(state = initialState, action?: IMatrixAction) {
   switch (action.type) {
     case SET_SIZE:
-      return Object.assign({}, state, action.payload, {
-        value: createEmptyMatrix(action.payload.N, action.payload.M),
-      });
+      return { value: createEmptyMatrix(action.payload.N, action.payload.M) };
 
     case INVERT_ITEM:
       const { n, m } = action.payload;
@@ -25,7 +20,7 @@ export function matrixReducer(state = initialState, action?: IMatrixAction) {
       item.value = +!item.value;
       return Object.assign({}, state);
 
-    case GET_DOMAINS_COUNT:
+    case COUNT_DOMAINS:
       const positiveItems = new Set<IMatrixItem>();
       const domains = new Map<number, IMatrixItem[]>();
 
@@ -73,28 +68,28 @@ export function matrixReducer(state = initialState, action?: IMatrixAction) {
   }
 }
 
-export function setMatrixSize(N = 1, M = 1): IMatrixAction {
+export function setSize(N = 1, M = 1): IMatrixAction {
   return {
     type: SET_SIZE,
     payload: { N, M },
   };
 }
 
-export function invertMatrixItem(n: number, m: number): IMatrixAction {
+export function invertItem(n: number, m: number): IMatrixAction {
   return {
     type: INVERT_ITEM,
     payload: { n, m },
   };
 }
 
-export function getDomainsCount(): IMatrixAction {
+export function countDomains(): IMatrixAction {
   return {
-    type: GET_DOMAINS_COUNT,
+    type: COUNT_DOMAINS,
   };
 }
 
 function createEmptyMatrix(N: number, M: number) {
-  const matrix: IMatrix['value'] = [];
+  const matrix: IMatrixItem[][] = [];
 
   for (let n = 0; n < N; n++) {
     matrix.push([]);
