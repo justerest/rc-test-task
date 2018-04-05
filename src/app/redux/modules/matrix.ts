@@ -5,16 +5,9 @@ export const SET_SIZE: string = 'matrix/SET_SIZE';
 export const INVERT_ITEM: string = 'matrix/INVERT_ITEM';
 export const GET_DOMAINS_COUNT: string = 'matrix/GET_DOMAINS_COUNT';
 
-/** Matrix rows count */
-const N = 5;
-/** Matrix columns count */
-const M = 6;
-
 /** Matrix: Initial State */
 const initialState: IMatrix = {
-  N,
-  M,
-  value: createEmptyMatrix(N, M),
+  value: createEmptyMatrix(7, 7),
   domainsLength: 0,
 };
 
@@ -28,34 +21,49 @@ export function matrixReducer(state = initialState, action?: IMatrixAction) {
 
     case INVERT_ITEM:
       const { n, m } = action.payload;
-      state.value[n][m].value = +!state.value[n][m].value;
+      const item = state.value[n][m];
+      item.value = +!item.value;
       return Object.assign({}, state);
 
     case GET_DOMAINS_COUNT:
-      const allItemsWithValue1 = new Set<IMatrixItem>();
-      const domains = new Set<number>();
+      const positiveItems = new Set<IMatrixItem>();
+      const domains = new Map<number, IMatrixItem[]>();
 
       for (const row of state.value) {
         for (const item of row) {
           if (item.value) {
-            item.domain = allItemsWithValue1.size;
-            domains.add(allItemsWithValue1.size);
-            allItemsWithValue1.add(item);
+            item.domain = positiveItems.size;
+            domains.set(item.domain, [item]);
+            positiveItems.add(item);
           }
         }
       }
 
-      for (const item of allItemsWithValue1) {
-        const right = item.m + 1 < state.M && state.value[item.n][item.m + 1];
-        const down = item.n + 1 < state.N && state.value[item.n + 1][item.m];
+      for (const item of positiveItems) {
+        const neighbors = [];
+        if (item.m + 1 < state.value[0].length) {
+          const rightNeighbor = state.value[item.n][item.m + 1];
+          neighbors.push(rightNeighbor);
+        }
+        if (item.n + 1 < state.value.length) {
+          const downNeighbor = state.value[item.n + 1][item.m];
+          neighbors.push(downNeighbor);
+        }
 
-        [right, down]
-          .filter((next) => allItemsWithValue1.has(next))
-          .filter((next) => item.domain < next.domain)
-          .forEach((next) => {
-            domains.delete(next.domain);
-            next.domain = item.domain;
-          });
+        const mergeDomains = (next) => {
+          const [max, min] = [item, next].sort((a, b) => b.domain - a.domain);
+          const maxDomain = max.domain;
+          const minDomain = min.domain;
+
+          domains.get(maxDomain).forEach((el) => el.domain = minDomain);
+          domains.get(minDomain).push(...domains.get(maxDomain));
+          domains.delete(maxDomain);
+        };
+
+        neighbors
+          .filter((next) => positiveItems.has(next))
+          .filter((next) => item.domain !== next.domain)
+          .forEach(mergeDomains);
       }
 
       return Object.assign({}, state, { domainsLength: domains.size });

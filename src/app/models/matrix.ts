@@ -1,15 +1,13 @@
+export interface IMatrix {
+  value: IMatrixItem[][];
+  domainsLength?: number;
+}
+
 export interface IMatrixItem {
   value: number;
   n: number;
   m: number;
   domain?: number;
-}
-
-export interface IMatrix {
-  value: IMatrixItem[][];
-  N: number;
-  M: number;
-  domainsLength?: number;
 }
 
 export interface IMatrixAction {

@@ -22,19 +22,25 @@ export class Home extends React.Component<IProps, {}> {
 
   public render() {
     const { matrix, invertMatrixItem, getDomainsCount } = this.props;
-
+    const colors = new Map<number, string>();
     const table = [];
+
     for (let n = 0; n < matrix.N; n++) {
       const row = [];
       table.push(
         <tr key={n}>{row}</tr>,
       );
       for (let m = 0; m < matrix.M; m++) {
+        const item = matrix.value[n][m];
+        if (!colors.has(item.domain)) {
+          colors.set(item.domain, '#' + (Math.round(Math.random() * 0XFFFFFF)).toString(16));
+        }
         row.push(
           <td key={n + ',' + m}
             className={style.matrix__item}
+            style={{ background: item.value ? colors.get(item.domain) : 'none' }}
             onClick={invertMatrixItem.bind(null, n, m)}>
-            {matrix.value[n][m].value}
+            {item.value}
           </td>,
         );
       }
@@ -42,7 +48,7 @@ export class Home extends React.Component<IProps, {}> {
 
     return (
       <div className={style.home}>
-        <p>Матрица (доменов: {+matrix.domainsLength})</p>
+        <p>Матрица (доменов: {matrix.domainsLength})</p>
         <table className={style.matrix}>
           <tbody>
             {table}
