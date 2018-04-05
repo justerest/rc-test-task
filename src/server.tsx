@@ -37,7 +37,7 @@ if (process.env.NODE_ENV !== 'production') {
     stats: { colors: true },
     noInfo: true,
     hot: false,
-    inline: true,
+    inline: false,
     lazy: false,
     historyApiFallback: true,
     quiet: true,
