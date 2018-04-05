@@ -1,5 +1,5 @@
 export interface IMatrix {
-  value: (0 | 1)[][];
+  value: number[][];
   N: number;
   M: number;
   domainsLength?: number;
@@ -10,5 +10,7 @@ export interface IMatrixAction {
   payload?: {
     N?: number;
     M?: number;
+    n?: number;
+    m?: number;
   };
 }

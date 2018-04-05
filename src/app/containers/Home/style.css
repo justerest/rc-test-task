@@ -1,3 +1,16 @@
-.Home {
+.home {
   text-align: center;
+}
+
+.matrix {
+  margin: auto;
+  user-select: none;
+  border-collapse: collapse;
+  font-size: 20px;
+
+  &__item {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+  }
 }
