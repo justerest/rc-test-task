@@ -2,5 +2,3 @@
 export { Html } from './Html';
 export { App } from './App';
 export { Home } from './Home';
-export { Counter } from './Counter';
-export { Stars } from './Stars';
