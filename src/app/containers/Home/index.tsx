@@ -1,5 +1,5 @@
 import { IMatrix, IMatrixAction } from 'models/matrix';
-import { invertMatrixCell } from 'modules/matrix';
+import { getDomainsCount, invertMatrixItem } from 'modules/matrix';
 import * as React from 'react';
 
 const { connect } = require('react-redux');
@@ -7,38 +7,48 @@ const style = require('./style.css');
 
 interface IProps {
   matrix: IMatrix;
-  invertMatrixCell: Redux.ActionCreator<IMatrixAction>;
+  invertMatrixItem: Redux.ActionCreator<IMatrixAction>;
+  getDomainsCount: Redux.ActionCreator<IMatrixAction>;
 }
 
 @connect(
   (state) => ({ matrix: state.matrix }),
   (dispatch) => ({
-    invertMatrixCell: (n: number, m: number) => dispatch(invertMatrixCell(n, m)),
+    invertMatrixItem: (n: number, m: number) => dispatch(invertMatrixItem(n, m)),
+    getDomainsCount: () => dispatch(getDomainsCount()),
   }),
 )
 export class Home extends React.Component<IProps, {}> {
 
   public render() {
-    const { matrix } = this.props;
+    const { matrix, invertMatrixItem, getDomainsCount } = this.props;
 
-    const table = matrix.value
-      .map((line, i) => line.map((cell, j) => (
-        <td key={i + ',' + j}
-          className={style.matrix__item}
-          onClick={this.props.invertMatrixCell.bind(null, i, j)}>
-          {cell}
-        </td>
-      )))
-      .map((line, i) => <tr key={i}>{line}</tr>);
+    const table = [];
+    for (let n = 0; n < matrix.N; n++) {
+      const row = [];
+      table.push(
+        <tr key={n}>{row}</tr>,
+      );
+      for (let m = 0; m < matrix.M; m++) {
+        row.push(
+          <td key={n + ',' + m}
+            className={style.matrix__item}
+            onClick={invertMatrixItem.bind(null, n, m)}>
+            {matrix.value[n][m].value}
+          </td>,
+        );
+      }
+    }
 
     return (
       <div className={style.home}>
-        <p>Матрица</p>
+        <p>Матрица (доменов: {+matrix.domainsLength})</p>
         <table className={style.matrix}>
           <tbody>
             {table}
           </tbody>
         </table>
+        <button className={style.button} onClick={getDomainsCount}>Посчитать домены</button>
       </div>
     );
   }

@@ -6,11 +6,15 @@
   margin: auto;
   user-select: none;
   border-collapse: collapse;
-  font-size: 20px;
+  font-size: 30px;
+}
 
-  &__item {
-    padding: 5px;
-    cursor: pointer;
-    background-color: #ddd;
-  }
+.matrix__item {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #ddd;
+}
+
+.button {
+  margin-top: 15px;
 }

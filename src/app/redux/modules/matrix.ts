@@ -1,8 +1,9 @@
-import { IMatrix, IMatrixAction } from 'models/matrix';
+import { IMatrix, IMatrixAction, IMatrixItem } from 'models/matrix';
 
 /** Action Types */
 export const SET_SIZE: string = 'matrix/SET_SIZE';
-export const INVERT_CELL: string = 'matrix/INVERT_CELL';
+export const INVERT_ITEM: string = 'matrix/INVERT_ITEM';
+export const GET_DOMAINS_COUNT: string = 'matrix/GET_DOMAINS_COUNT';
 
 /** Matrix rows count */
 const N = 5;
@@ -25,22 +26,39 @@ export function matrixReducer(state = initialState, action?: IMatrixAction) {
         value: createEmptyMatrix(action.payload.N, action.payload.M),
       });
 
-    case INVERT_CELL:
-      const row = state.value[action.payload.n];
-      const { m } = action.payload;
-      row[m] = +!row[m];
+    case INVERT_ITEM:
+      const { n, m } = action.payload;
+      state.value[n][m].value = +!state.value[n][m].value;
+      return Object.assign({}, state);
 
-      const all1 = new Set();
-      for (let i = 0; i < state.N; i++) {
-        for (let j = 0; j < state.M; j++) {
-          if (state.value[i][j]) {
-            all1.add(i + ',' + j);
+    case GET_DOMAINS_COUNT:
+      const allItemsWithValue1 = new Set<IMatrixItem>();
+      const domains = new Set<number>();
+
+      for (const row of state.value) {
+        for (const item of row) {
+          if (item.value) {
+            item.domain = allItemsWithValue1.size;
+            domains.add(allItemsWithValue1.size);
+            allItemsWithValue1.add(item);
           }
         }
       }
-      console.log(...all1);
 
-      return Object.assign({}, state);
+      for (const item of allItemsWithValue1) {
+        const right = item.m + 1 < state.M && state.value[item.n][item.m + 1];
+        const down = item.n + 1 < state.N && state.value[item.n + 1][item.m];
+
+        [right, down]
+          .filter((next) => allItemsWithValue1.has(next))
+          .filter((next) => item.domain < next.domain)
+          .forEach((next) => {
+            domains.delete(next.domain);
+            next.domain = item.domain;
+          });
+      }
+
+      return Object.assign({}, state, { domainsLength: domains.size });
 
     default:
       return state;
@@ -54,19 +72,26 @@ export function setMatrixSize(N = 1, M = 1): IMatrixAction {
   };
 }
 
-export function invertMatrixCell(n: number, m: number): IMatrixAction {
+export function invertMatrixItem(n: number, m: number): IMatrixAction {
   return {
-    type: INVERT_CELL,
+    type: INVERT_ITEM,
     payload: { n, m },
   };
 }
 
+export function getDomainsCount(): IMatrixAction {
+  return {
+    type: GET_DOMAINS_COUNT,
+  };
+}
+
 function createEmptyMatrix(N: number, M: number) {
-  const matrix = [];
-  for (let i = 0; i < N; i++) {
+  const matrix: IMatrix['value'] = [];
+
+  for (let n = 0; n < N; n++) {
     matrix.push([]);
-    for (let j = 0; j < M; j++) {
-      matrix[i].push(0);
+    for (let m = 0; m < M; m++) {
+      matrix[n].push({ n, m, value: 0 });
     }
   }
 
