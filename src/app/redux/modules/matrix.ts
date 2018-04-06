@@ -1,11 +1,9 @@
 import { IMatrix, IMatrixAction, IMatrixItem } from 'models/matrix';
-// import { combineReducers } from 'redux';
 
-/** Action Types */
-export const SET_SIZE = 'matrix/SET_SIZE';
-export const INVERT_ITEM = 'matrix/INVERT_ITEM';
 export const COUNT_DOMAINS = 'matrix/COUNT_DOMAINS';
-export const CREATE_RANDOM = 'matrix/CREATE_RANDOM';
+export const INVERT_ITEM = 'matrix/INVERT_ITEM';
+export const SET_RANDOM = 'matrix/SET_RANDOM';
+export const SET_SIZE = 'matrix/SET_SIZE';
 
 /** Matrix: Initial State */
 const initialState: IMatrix = {
@@ -23,14 +21,31 @@ export function matrixReducer(state = initialState, action?: IMatrixAction): IMa
     case INVERT_ITEM:
       return {
         ...state,
-        value: invertItem(state.value, action),
+        value: toggleItemValue(state.value, action),
         isChecked: false,
       };
 
     case COUNT_DOMAINS:
       return {
         ...state,
-        domainsLength: countDomains(state.value),
+        domainsLength: getDomainsCount(state.value),
+        isChecked: true,
+      };
+
+    case SET_RANDOM:
+      const value = createEmptyMatrix(state.value.length, state.value[0].length);
+      for (const row of state.value) {
+        for (const item of row) {
+          if (Math.random() < action.payload.chance) {
+            action.payload.n = item.n;
+            action.payload.m = item.m;
+            toggleItemValue(value, action);
+          }
+        }
+      }
+      return {
+        value,
+        domainsLength: getDomainsCount(value),
         isChecked: true,
       };
 
@@ -39,23 +54,30 @@ export function matrixReducer(state = initialState, action?: IMatrixAction): IMa
   }
 }
 
-export function setMatrixSize(N = 1, M = 1): IMatrixAction {
+export function setSize(N: number, M: number): IMatrixAction {
   return {
     type: SET_SIZE,
     payload: { N, M },
   };
 }
 
-export function invertMatrixItem(n: number, m: number): IMatrixAction {
+export function invertItem(n: number, m: number): IMatrixAction {
   return {
     type: INVERT_ITEM,
     payload: { n, m },
   };
 }
 
-export function countMatrixDomains(): IMatrixAction {
+export function countDomains(): IMatrixAction {
   return {
     type: COUNT_DOMAINS,
+  };
+}
+
+export function setAutoValue(chance: number): IMatrixAction {
+  return {
+    type: SET_RANDOM,
+    payload: { chance },
   };
 }
 
@@ -72,14 +94,14 @@ function createEmptyMatrix(N: number, M: number) {
   return matrix;
 }
 
-function invertItem(state: IMatrixItem[][], action: IMatrixAction) {
+function toggleItemValue(state: IMatrixItem[][], action: IMatrixAction) {
   const { n, m } = action.payload;
   const item = state[n][m];
   item.value = +!item.value;
   return state;
 }
 
-function countDomains(state: IMatrixItem[][]) {
+function getDomainsCount(state: IMatrixItem[][]) {
   const positiveItems = new Set<IMatrixItem>();
   const domains = new Map<number, IMatrixItem[]>();
 

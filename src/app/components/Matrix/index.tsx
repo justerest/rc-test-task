@@ -1,5 +1,5 @@
 import { IMatrix, IMatrixAction } from 'models/matrix';
-import { invertMatrixItem } from 'modules/matrix';
+import { invertItem } from 'modules/matrix';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { IStore } from 'redux/IStore';
@@ -52,6 +52,6 @@ export class Matrix extends React.Component<IProps, {}> {
 export default connect(
   (state: IStore) => ({ matrix: state.matrix }),
   (dispatch) => ({
-    invertMatrixItem: (n: number, m: number) => dispatch(invertMatrixItem(n, m)),
+    invertMatrixItem: (n: number, m: number) => dispatch(invertItem(n, m)),
   }),
 )(Matrix);

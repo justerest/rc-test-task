@@ -1,6 +1,5 @@
 export interface IMatrix {
   value: IMatrixItem[][];
-  chance?: number;
   domainsLength?: number;
   isChecked?: boolean;
 }
@@ -19,5 +18,6 @@ export interface IMatrixAction {
     M?: number;
     n?: number;
     m?: number;
+    chance?: number;
   };
 }
