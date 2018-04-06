@@ -2,29 +2,22 @@
   text-align: center;
 }
 
-.matrix {
-  overflow: hidden;
-  margin: auto;
-  user-select: none;
-  border-collapse: collapse;
-  border-radius: 5px;
-  background: #ddd;
-  box-shadow: 2px 2px 15px 1px;
-  font-size: 30px;
-}
-
-.matrix__item {
-  z-index: 1;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-}
-
 .button {
-  margin-top: 15px;
+  margin: 15px 0;
   padding: 5px 15px;
   border: none;
   border-radius: 5px;
   background: #ddd;
   font-size: 16px;
+}
+
+.input-group {
+  margin: 15px 0;
+  font-size: 22px;
+}
+
+.input {
+  max-width: 100px;
+  margin-left: 15px;
+  font-size: 22px;
 }

@@ -1,5 +1,6 @@
+import Matrix from 'components/Matrix';
 import { IMatrix, IMatrixAction } from 'models/matrix';
-import { countDomains, invertItem } from 'modules/matrix';
+import { countMatrixDomains, setMatrixSize } from 'modules/matrix';
 import * as React from 'react';
 
 const { connect } = require('react-redux');
@@ -7,64 +8,89 @@ const style = require('./style.css');
 
 interface IProps {
   matrix: IMatrix;
-  invertMatrixItem: Redux.ActionCreator<IMatrixAction>;
   countMatrixDomains: Redux.ActionCreator<IMatrixAction>;
+  setMatrixSize: Redux.ActionCreator<IMatrixAction>;
+}
+
+interface IState {
+  N: number;
+  M: number;
 }
 
 @connect(
   (state) => ({ matrix: state.matrix }),
   (dispatch) => ({
-    invertMatrixItem: (n: number, m: number) => dispatch(invertItem(n, m)),
-    countMatrixDomains: () => dispatch(countDomains()),
+    countMatrixDomains: () => dispatch(countMatrixDomains()),
+    setMatrixSize: (N: number, M: number) => dispatch(setMatrixSize(N, M)),
   }),
 )
-export class Home extends React.Component<IProps, {}> {
+export class Home extends React.Component<IProps, IState> {
+
+  public state = {
+    N: 5,
+    M: 6,
+  };
+
+  constructor(props) {
+    super(props);
+    this.setMatrixSize = this.setMatrixSize.bind(this);
+  }
 
   public render() {
-    const { matrix, invertMatrixItem, countMatrixDomains } = this.props;
-    const colors = new Map<number, string>();
-    const table = [];
-
-    for (let n = 0; n < matrix.value.length; n++) {
-      const row = [];
-
-      table.push(
-        <tr key={n}>{row}</tr>,
-      );
-
-      for (let m = 0; m < matrix.value[n].length; m++) {
-        const item = matrix.value[n][m];
-        if (!colors.has(item.domain)) {
-          colors.set(item.domain, '#' + (Math.round(Math.random() * 0XFFFFFF)).toString(16));
-        }
-
-        row.push(
-          <td key={n + ',' + m}
-            className={style.matrix__item}
-            style={{ background: item.value ? colors.get(item.domain) : 'none' }}
-            onClick={invertMatrixItem.bind(null, n, m)}>
-            {item.value}
-          </td>,
-        );
-      }
-    }
+    const { matrix, countMatrixDomains } = this.props;
 
     return (
       <div className={style.home}>
 
-        <p>Матрица {'domainsLength' in matrix ? `(доменов: ${matrix.domainsLength})` : ''}</p>
+        <h1>
+          Матрица {matrix.value.length}x{matrix.value[0].length} &nbsp;
+          {matrix.isChecked ? `(доменов: ${matrix.domainsLength})` : ''}
+        </h1>
 
-        <table className={style.matrix}>
-          <tbody>
-            {table}
-          </tbody>
-        </table>
+        <Matrix />
 
         <button className={style.button} onClick={countMatrixDomains}>
           Посчитать домены
         </button>
 
+        <form onSubmit={this.setMatrixSize} >
+          <div className={style['input-group']}>
+            <label htmlFor="N">N:</label>
+            <input id="N"
+              className={style.input}
+              max="40" min="1"
+              value={this.state.N}
+              onChange={this.handleChangeInput.bind(this, 'N')}
+              type="number"
+            />
+          </div>
+          <div className={style['input-group']}>
+            <label htmlFor="M">M:</label>
+            <input id="M"
+              className={style.input}
+              max="40" min="1"
+              value={this.state.M}
+              onChange={this.handleChangeInput.bind(this, 'M')}
+              type="number"
+            />
+          </div>
+          <button className={style.button} type="submit">
+            Задать матрицу
+          </button>
+        </form>
+
       </div>
     );
   }
+
+  private setMatrixSize(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    this.props.setMatrixSize(this.state.N, this.state.M);
+  }
+
+  private handleChangeInput(key: keyof IState, event: Event) {
+    const { value } = event.target as HTMLInputElement;
+    this.setState({ [key]: +value } as any);
+  }
+
 }

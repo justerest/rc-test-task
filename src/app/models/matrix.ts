@@ -1,6 +1,8 @@
 export interface IMatrix {
   value: IMatrixItem[][];
+  chance?: number;
   domainsLength?: number;
+  isChecked?: boolean;
 }
 
 export interface IMatrixItem {

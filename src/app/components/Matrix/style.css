@@ -1,0 +1,28 @@
+.matrix {
+  overflow: hidden;
+  margin: auto;
+  user-select: none;
+  border-collapse: collapse;
+  border-radius: 5px;
+  background: #ddd;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .5);
+  font-size: 30px;
+}
+
+.matrix__item {
+  position: relative;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.matrix__item:hover:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  content: '';
+  background: rgba(0, 0, 0, .2);
+}
