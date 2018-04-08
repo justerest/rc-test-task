@@ -102,42 +102,32 @@ function toggleItemValue(state: IMatrixItem[][], action: IMatrixAction) {
 }
 
 function getDomainsCount(state: IMatrixItem[][]) {
-  const positiveItems = new Set<IMatrixItem>();
   const domains = new Map<number, IMatrixItem[]>();
 
-  for (const row of state) {
-    for (const item of row) {
-      if (item.value) {
-        item.domain = positiveItems.size;
-        domains.set(item.domain, [item]);
-        positiveItems.add(item);
-      }
-    }
-  }
+  state.reduce((flatArr, row) => flatArr.concat(row), [])
+    .filter((item) => item.value)
+    .map((item) => {
+      item.domain = domains.size;
+      domains.set(item.domain, [item]);
+      return item;
+    })
+    .forEach((item) => {
+      const rightNeighbor = item.m + 1 < state[0].length && state[item.n][item.m + 1];
+      const downNeighbor = item.n + 1 < state.length && state[item.n + 1][item.m];
 
-  for (const item of positiveItems) {
-    const neighbors: IMatrixItem[] = [];
-    if (item.m + 1 < state[0].length) {
-      const rightNeighbor = state[item.n][item.m + 1];
-      neighbors.push(rightNeighbor);
-    }
-    if (item.n + 1 < state.length) {
-      const downNeighbor = state[item.n + 1][item.m];
-      neighbors.push(downNeighbor);
-    }
-    const mergeDomains = (next: IMatrixItem) => {
-      const [max, min] = [item, next].sort((a, b) => b.domain - a.domain);
-      const maxDomain = max.domain;
-      const minDomain = min.domain;
-      domains.get(maxDomain).forEach((el) => el.domain = minDomain);
-      domains.get(minDomain).push(...domains.get(maxDomain));
-      domains.delete(maxDomain);
-    };
-    neighbors
-      .filter((next) => positiveItems.has(next))
-      .filter((next) => item.domain !== next.domain)
-      .forEach(mergeDomains);
-  }
+      const mergeDomains = (next: IMatrixItem) => {
+        const [min, max] = [item, next].sort((a, b) => a.domain - b.domain);
+        const maxDomain = max.domain;
+
+        domains.get(maxDomain).forEach((el) => el.domain = min.domain);
+        domains.get(min.domain).push(...domains.get(maxDomain));
+        domains.delete(maxDomain);
+      };
+
+      [rightNeighbor, downNeighbor].filter((next) => next && next.value)
+        .filter((next) => item.domain !== next.domain)
+        .forEach(mergeDomains);
+    });
 
   return domains.size;
 }

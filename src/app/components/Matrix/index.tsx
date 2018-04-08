@@ -50,7 +50,7 @@ export class Matrix extends React.Component<IProps, {}> {
 }
 
 export default connect(
-  (state: IStore) => ({ matrix: state.matrix }),
+  ({ matrix }: IStore) => ({ matrix }),
   (dispatch) => ({
     invertMatrixItem: (n: number, m: number) => dispatch(invertItem(n, m)),
   }),
