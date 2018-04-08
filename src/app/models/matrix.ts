@@ -1,5 +1,6 @@
 export interface IMatrix {
   value: IMatrixItem[][];
+  log: IMatrixHistory[];
   domainsLength?: number;
   isChecked?: boolean;
 }
@@ -9,6 +10,13 @@ export interface IMatrixItem {
   n: number;
   m: number;
   domain?: number;
+}
+
+export interface IMatrixHistory {
+  N: number;
+  M: number;
+  domainsLength: number;
+  chance: number;
 }
 
 export interface IMatrixAction {

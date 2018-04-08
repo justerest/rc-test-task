@@ -8,6 +8,7 @@ export const SET_SIZE = 'matrix/SET_SIZE';
 /** Matrix: Initial State */
 const initialState: IMatrix = {
   value: createEmptyMatrix(5, 6),
+  log: [],
 };
 
 /** Reducer: MatrixReducer */
@@ -16,36 +17,43 @@ export function matrixReducer(state = initialState, action?: IMatrixAction): IMa
     case SET_SIZE:
       return {
         value: createEmptyMatrix(action.payload.N, action.payload.M),
+        log: state.log,
       };
 
     case INVERT_ITEM:
+      toggleItemValue(state.value, action);
       return {
         ...state,
-        value: toggleItemValue(state.value, action),
         isChecked: false,
       };
 
     case COUNT_DOMAINS:
       return {
         ...state,
-        domainsLength: getDomainsCount(state.value),
+        domainsLength: generateDomains(state.value),
         isChecked: true,
       };
 
     case SET_RANDOM:
-      const value = createEmptyMatrix(state.value.length, state.value[0].length);
-      for (const row of state.value) {
-        for (const item of row) {
-          if (Math.random() < action.payload.chance) {
-            action.payload.n = item.n;
-            action.payload.m = item.m;
-            toggleItemValue(value, action);
-          }
-        }
-      }
+      const N = state.value.length;
+      const M = state.value[0].length;
+      const value = createEmptyMatrix(N, M);
+      const { chance } = action.payload;
+
+      value.reduce((flatArr, row) => flatArr.concat(row), [])
+        .filter(() => Math.random() < chance)
+        .forEach((item) => {
+          const { n, m } = item;
+          toggleItemValue(value, { payload: { n, m }, type: '' });
+        });
+
+      const domainsLength = generateDomains(value);
+      state.log.push({ chance, N, M, domainsLength });
+
       return {
         value,
-        domainsLength: getDomainsCount(value),
+        log: state.log.slice(-10),
+        domainsLength,
         isChecked: true,
       };
 
@@ -101,13 +109,13 @@ function toggleItemValue(state: IMatrixItem[][], action: IMatrixAction) {
   return state;
 }
 
-function getDomainsCount(state: IMatrixItem[][]) {
+function generateDomains(state: IMatrixItem[][]) {
   const domains = new Map<number, IMatrixItem[]>();
 
   state.reduce((flatArr, row) => flatArr.concat(row), [])
     .filter((item) => item.value)
-    .map((item) => {
-      item.domain = domains.size;
+    .map((item, i) => {
+      item.domain = i;
       domains.set(item.domain, [item]);
       return item;
     })

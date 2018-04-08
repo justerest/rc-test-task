@@ -3,9 +3,12 @@ import { invertItem } from 'modules/matrix';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { IStore } from 'redux/IStore';
-import { COLORS } from 'utils/colors';
 
+const randomColor = require('randomcolor');
 const style = require('./style.css');
+
+const MAX_MATRIX_SIZE = 40 * 40;
+const COLORS: string[] = randomColor({ count: MAX_MATRIX_SIZE });
 
 interface IProps {
   matrix: IMatrix;
@@ -16,16 +19,18 @@ export class Matrix extends React.Component<IProps, {}> {
 
   public render() {
     const { matrix, invertMatrixItem } = this.props;
+    const N = matrix.value.length;
+    const M = matrix.value[0].length;
     const table = [];
 
-    for (let n = 0; n < matrix.value.length; n++) {
+    for (let n = 0; n < N; n++) {
       const row = [];
 
       table.push(
         <tr key={n}>{row}</tr>,
       );
 
-      for (let m = 0; m < matrix.value[n].length; m++) {
+      for (let m = 0; m < M; m++) {
         const item = matrix.value[n][m];
 
         row.push(

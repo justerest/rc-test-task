@@ -16,7 +16,7 @@ interface IProps {
 interface IState {
   N: number;
   M: number;
-  chance: string;
+  chance: number;
 }
 
 @connect(
@@ -32,7 +32,7 @@ export class Home extends React.Component<IProps, IState> {
   public state = {
     N: 5,
     M: 6,
-    chance: '5',
+    chance: 0.5,
   };
 
   constructor(props) {
@@ -43,6 +43,14 @@ export class Home extends React.Component<IProps, IState> {
 
   public render() {
     const { matrix, countMatrixDomains } = this.props;
+
+    const matrixHistory = matrix.log.map((historyItem, i) => (
+      <tr key={i}>
+        <td>{historyItem.chance}</td>
+        <td>{historyItem.domainsLength}</td>
+        <td>{historyItem.N} x {historyItem.M}</td>
+      </tr>
+    ));
 
     return (
       <div className={style.home}>
@@ -67,6 +75,7 @@ export class Home extends React.Component<IProps, IState> {
                 max="40" min="1"
                 value={this.state.N}
                 onChange={this.handleChangeInput.bind(this, 'N')}
+                required={true}
                 type="number"
               />
             </div>
@@ -77,6 +86,7 @@ export class Home extends React.Component<IProps, IState> {
                 max="40" min="1"
                 value={this.state.M}
                 onChange={this.handleChangeInput.bind(this, 'M')}
+                required={true}
                 type="number"
               />
             </div>
@@ -87,12 +97,13 @@ export class Home extends React.Component<IProps, IState> {
 
           <form onSubmit={this.setRandomMatrixValue} >
             <div className={style['input-group']}>
-              <label htmlFor="chance">Вероятность: 0,</label>
+              <label htmlFor="chance">Вероятность:</label>
               <input id="chance"
-                className={style.input + ' ' + style.input_ml_0}
-                max="99" min="1"
+                className={style.input}
+                min="0.01" max="0.99" step="0.01"
                 value={this.state.chance}
                 onChange={this.handleChangeInput.bind(this, 'chance')}
+                required={true}
                 type="number"
               />
             </div>
@@ -101,6 +112,17 @@ export class Home extends React.Component<IProps, IState> {
             </button>
           </form>
         </section>
+
+        <table className={style['table-log']}>
+          <tbody>
+            <tr className={style['table-log__header']}>
+              <td>Вероятность</td>
+              <td>Количество доменов в матрице</td>
+              <td>Количество ячеек в матрице</td>
+            </tr>
+            {matrixHistory}
+          </tbody>
+        </table>
 
       </div>
     );
@@ -113,12 +135,12 @@ export class Home extends React.Component<IProps, IState> {
 
   private setRandomMatrixValue(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    this.props.setRandomMatrixValue(parseFloat('0.' + this.state.chance));
+    this.props.setRandomMatrixValue(this.state.chance);
   }
 
   private handleChangeInput(key: keyof IState, event: Event) {
     const { value } = event.target as HTMLInputElement;
-    this.setState({ [key]: value } as any);
+    this.setState({ [key]: parseFloat(value) } as any);
   }
 
 }
