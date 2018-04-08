@@ -1,6 +1,6 @@
 {
   "name": "rc-test-task",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Test task",
   "main": "build/server.js",
   "scripts": {
