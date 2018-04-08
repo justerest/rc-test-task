@@ -22,7 +22,7 @@
     "@types/history": "^4.5.0",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/mocha": "^2.2.38",
-    "@types/node": "^8.0.47",
+    "@types/node": "^8.10.3",
     "@types/react": "^16.3.5",
     "@types/react-dom": "^16.0.2",
     "@types/react-helmet": "^5.0.2",
@@ -80,7 +80,7 @@
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-dev-server": "^2.2.0",
-    "webpack-hot-middleware": "^2.18.0",
+    "webpack-hot-middleware": "^2.22.0",
     "webpack-manifest-plugin": "^1.1.0"
   },
   "dependencies": {
@@ -90,6 +90,7 @@
     "express": "^4.14.0",
     "history": "^4.5.1",
     "isomorphic-fetch": "^2.2.1",
+    "randomcolor": "^0.5.3",
     "react": "^16.3.1",
     "react-css-modules": "^4.1.0",
     "react-dom": "^16.3.1",
