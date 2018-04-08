@@ -36,7 +36,7 @@ export class Matrix extends React.Component<IProps, {}> {
         row.push(
           <td key={n + ',' + m}
             className={style.matrix__item}
-            style={{ background: matrix.isChecked && item.value ? COLORS[item.domain] : 'none' }}
+            style={{ background: matrix.isChecked && item.value ? COLORS[item.domain.value] : 'none' }}
             onClick={invertMatrixItem.bind(null, n, m)}>
             {item.value}
           </td>,

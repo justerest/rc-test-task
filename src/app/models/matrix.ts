@@ -9,7 +9,9 @@ export interface IMatrixItem {
   value: number;
   n: number;
   m: number;
-  domain?: number;
+  domain?: {
+    value: number,
+  };
 }
 
 export interface IMatrixHistory {

@@ -110,31 +110,37 @@ function toggleItemValue(state: IMatrixItem[][], action: IMatrixAction) {
 }
 
 function generateDomains(state: IMatrixItem[][]) {
-  const domains = new Map<number, IMatrixItem[]>();
+  const domains = new Set<number>();
+
+  const mergeDomains = (item: IMatrixItem, ...neighbors: IMatrixItem[]) => {
+    neighbors.filter((next) => next && next.value)
+      .filter((next) => item.domain !== next.domain)
+      .forEach((next: IMatrixItem) => {
+        const [min, max] = [item, next].sort((a, b) => a.domain.value - b.domain.value);
+        domains.delete(max.domain.value);
+        max.domain.value = min.domain.value;
+        max.domain = min.domain;
+      });
+    return item;
+  };
 
   state.reduce((flatArr, row) => flatArr.concat(row), [])
     .filter((item) => item.value)
     .map((item, i) => {
-      item.domain = i;
-      domains.set(item.domain, [item]);
+      item.domain = { value: i };
+      domains.add(i);
       return item;
     })
-    .forEach((item) => {
+    .map((item) => {
       const rightNeighbor = item.m + 1 < state[0].length && state[item.n][item.m + 1];
       const downNeighbor = item.n + 1 < state.length && state[item.n + 1][item.m];
-
-      const mergeDomains = (next: IMatrixItem) => {
-        const [min, max] = [item, next].sort((a, b) => a.domain - b.domain);
-        const maxDomain = max.domain;
-
-        domains.get(maxDomain).forEach((el) => el.domain = min.domain);
-        domains.get(min.domain).push(...domains.get(maxDomain));
-        domains.delete(maxDomain);
-      };
-
-      [rightNeighbor, downNeighbor].filter((next) => next && next.value)
-        .filter((next) => item.domain !== next.domain)
-        .forEach(mergeDomains);
+      return mergeDomains(item, rightNeighbor, downNeighbor);
+    })
+    .reverse()
+    .forEach((item) => {
+      const leftNeighbor = item.m > 0 && state[item.n][item.m - 1];
+      const upNeighbor = item.n > 0 && state[item.n - 1][item.m];
+      mergeDomains(item, leftNeighbor, upNeighbor);
     });
 
   return domains.size;
