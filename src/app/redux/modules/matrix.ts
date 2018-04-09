@@ -121,7 +121,6 @@ function generateDomains(state: IMatrixItem[][]) {
         max.domain.value = min.domain.value;
         max.domain = min.domain;
       });
-    return item;
   };
 
   state.reduce((flatArr, row) => flatArr.concat(row), [])
@@ -134,7 +133,8 @@ function generateDomains(state: IMatrixItem[][]) {
     .map((item) => {
       const rightNeighbor = item.m + 1 < state[0].length && state[item.n][item.m + 1];
       const downNeighbor = item.n + 1 < state.length && state[item.n + 1][item.m];
-      return mergeDomains(item, rightNeighbor, downNeighbor);
+      mergeDomains(item, rightNeighbor, downNeighbor);
+      return item;
     })
     .reverse()
     .forEach((item) => {
