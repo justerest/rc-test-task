@@ -114,7 +114,7 @@ function generateDomains(state: IMatrixItem[][]) {
 
   const mergeDomains = (item: IMatrixItem, ...neighbors: IMatrixItem[]) => {
     neighbors.filter((next) => next && next.value)
-      .filter((next) => item.domain !== next.domain)
+      .filter((next) => item.domain.value !== next.domain.value)
       .forEach((next: IMatrixItem) => {
         const [min, max] = [item, next].sort((a, b) => a.domain.value - b.domain.value);
         domains.delete(max.domain.value);
